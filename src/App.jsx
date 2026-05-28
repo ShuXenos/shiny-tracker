@@ -31,7 +31,7 @@ export default function App() {
       return;
     }
 
-    setPlayers(data);
+    setPlayers(data || []);
   };
 
   // =========================
@@ -55,7 +55,8 @@ export default function App() {
     });
 
     data.forEach((entry) => {
-      formatted[entry.pokemon_id][entry.player_id] = true;
+      formatted[entry.pokemon_id][entry.player_id] =
+        true;
     });
 
     setTracker(formatted);
@@ -73,6 +74,7 @@ export default function App() {
       tracker[pokemonId]?.[playerId] || false;
 
     // UPDATE LOCAL STATE
+
     setTracker((prev) => ({
       ...prev,
       [pokemonId]: {
@@ -82,6 +84,7 @@ export default function App() {
     }));
 
     // REMOVE
+
     if (currentlyOwned) {
       const { error } = await supabase
         .from('shiny_catches')
@@ -95,6 +98,7 @@ export default function App() {
     }
 
     // ADD
+
     else {
       const { error } = await supabase
         .from('shiny_catches')
@@ -237,7 +241,12 @@ export default function App() {
                 {player.name}
               </h2>
 
-              <p className="text-3xl font-bold text-yellow-400">
+              <p
+                className="text-3xl font-bold"
+                style={{
+                  color: player.color,
+                }}
+              >
                 {getPlayerCount(player.id)}
               </p>
 
@@ -258,9 +267,13 @@ export default function App() {
                 <div className="w-full bg-zinc-800 rounded-full h-3 overflow-hidden">
 
                   <div
-                    className="bg-yellow-400 h-3 rounded-full"
+                    className="h-3 rounded-full transition-all duration-300"
                     style={{
-                      width: `${getPlayerPercentage(player.id)}%`,
+                      width: `${getPlayerPercentage(
+                        player.id
+                      )}%`,
+                      backgroundColor:
+                        player.color,
                     }}
                   />
 
@@ -331,12 +344,14 @@ export default function App() {
                   <div className="w-full bg-zinc-800 rounded-full h-2 mt-1">
 
                     <div
-                      className="bg-yellow-400 h-2 rounded-full"
+                      className="h-2 rounded-full"
                       style={{
                         width: `${getGenerationPercentage(
                           player.id,
                           gen
                         )}%`,
+                        backgroundColor:
+                          player.color,
                       }}
                     />
                   </div>
@@ -450,7 +465,11 @@ export default function App() {
                             player.id
                           )
                         }
-                        className="w-6 h-6 accent-yellow-400 cursor-pointer"
+                        className="w-6 h-6 cursor-pointer"
+                        style={{
+                          accentColor:
+                            player.color,
+                        }}
                       />
                     </td>
                   ))}
