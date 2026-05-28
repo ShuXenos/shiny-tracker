@@ -3,7 +3,15 @@ import React from 'react';
 import { supabase } from './supabase';
 
 export default function App() {
-  const players = ['Alex', 'Lolo', 'Sky'];
+  const [players, setPlayers] = React.useState([]);
+
+  const loadPlayers = async () => {
+  const { data } = await supabase
+    .from('players')
+    .select('*');
+
+  setPlayers(data);
+};
 
   const generations = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -12,8 +20,9 @@ export default function App() {
   const [tracker, setTracker] = React.useState({});
   const [search, setSearch] = React.useState('');
   React.useEffect(() => {
+  loadPlayers();
   loadTracker();
-  }, []);
+}, []);
   const [selectedGeneration, setSelectedGeneration] = React.useState('all');
 
   const loadTracker = async () => {
