@@ -11,9 +11,13 @@ export default function App() {
   const [selectedGeneration, setSelectedGeneration] =
     React.useState('all');
 
+  const [recentShinies, setRecentShinies] =
+    React.useState([]);
+
   React.useEffect(() => {
     loadPlayers();
     loadTracker();
+    loadRecentShinies();
   }, []);
 
   // =========================
@@ -62,57 +66,80 @@ export default function App() {
     setTracker(formatted);
   };
 
+
+
+
+  // =========================
+  // LOAD RECENT SHINIES
+  // =========================
+
+  const loadRecentShinies = async () => {
+    const { data, error } = await supabase
+      .from('shiny_catches')
+      .select('*')
+      .order('obtained_at', {
+       ascending: false,
+      })
+      .limit(3);
+
+    if (error) {
+      console.error(error);
+     return;
+   }
+
+   setRecentShinies(data);
+  };
+
+
   // =========================
   // TOGGLE POKEMON
   // =========================
 
-  const togglePokemon = async (
-    pokemonId,
-    playerId
-  ) => {
-    const currentlyOwned =
-      tracker[pokemonId]?.[playerId] || false;
+const togglePokemon = async (
+  pokemonId,
+  playerId
+) => {
+  const currentlyOwned =
+    tracker[pokemonId]?.[playerId] || false;
 
-    // UPDATE LOCAL STATE
+  // UPDATE LOCAL STATE
 
-    setTracker((prev) => ({
-      ...prev,
-      [pokemonId]: {
-        ...prev[pokemonId],
-        [playerId]: !currentlyOwned,
-      },
-    }));
+  setTracker((prev) => ({
+    ...prev,
+    [pokemonId]: {
+      ...prev[pokemonId],
+      [playerId]: !currentlyOwned,
+    },
+  }));
 
-    // REMOVE
+  if (currentlyOwned) {
+    const { error } = await supabase
+      .from('shiny_catches')
+      .delete()
+      .eq('pokemon_id', pokemonId)
+      .eq('player_id', playerId);
 
-    if (currentlyOwned) {
-      const { error } = await supabase
-        .from('shiny_catches')
-        .delete()
-        .eq('pokemon_id', pokemonId)
-        .eq('player_id', playerId);
-
-      if (error) {
-        console.error(error);
-      }
+    if (error) {
+      console.error(error);
+    } else {
+      loadRecentShinies();
     }
+  } else {
+    const { error } = await supabase
+      .from('shiny_catches')
+      .insert({
+        pokemon_id: pokemonId,
+        player_id: playerId,
+        obtained_at: new Date().toISOString(),
+      });
 
-    // ADD
-
-    else {
-      const { error } = await supabase
-        .from('shiny_catches')
-        .insert({
-          pokemon_id: pokemonId,
-          player_id: playerId,
-        });
-
-      if (error) {
-        console.error(error);
-      }
+    if (error) {
+      console.error(error);
+    } else {
+      loadRecentShinies();
     }
-  };
-
+  }
+};
   // =========================
   // GLOBAL COUNTERS
   // =========================
@@ -224,9 +251,72 @@ export default function App() {
           </h1>
 
           <p className="text-zinc-400">
-            Tracker collaboratif
+            Si sa brille pas, DEHOOOORS!
           </p>
         </div>
+
+
+<div className="mb-8 bg-zinc-900 rounded-2xl p-6 border border-zinc-800">
+  <h2 className="text-2xl font-bold mb-4">
+    🏆 Derniers shiny obtenus
+  </h2>
+
+  {recentShinies.length === 0 ? (
+    <p className="text-zinc-400">
+      Aucun shiny enregistré.
+    </p>
+  ) : (
+    <div className="space-y-3">
+      {recentShinies.map((entry) => {
+        const pokemon = pokemonList.find(
+          (p) => p.id === entry.pokemon_id
+        );
+
+        const player = players.find(
+          (p) => p.id === entry.player_id
+        );
+
+        return (
+          <div
+            key={`${entry.player_id}-${entry.pokemon_id}-${entry.obtained_at}`}
+            className="flex items-center justify-between bg-zinc-800 rounded-xl p-3"
+          >
+            <div className="flex items-center gap-3">
+              <img
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${entry.pokemon_id}.png`}
+                alt={pokemon?.name}
+                className="w-12 h-12"
+              />
+
+              <div>
+                <div className="font-semibold">
+                  {pokemon?.name}
+                </div>
+
+                <div
+                  className="text-sm font-semibold"
+                  style={{
+                    color: player?.color,
+                  }}
+                >
+                  {player?.name}
+                </div>
+              </div>
+            </div>
+
+            <div className="text-sm text-zinc-400">
+              {new Date(
+                entry.obtained_at
+              ).toLocaleDateString('fr-FR')}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )}
+</div>
+
+
 
         {/* GLOBAL STATS */}
 
