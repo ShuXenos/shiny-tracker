@@ -48,29 +48,48 @@ export default function App() {
   // =========================
 
   const loadTracker = async () => {
-    const { data, error } = await supabase
-      .from('shiny_catches')
-      .select('*');
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
     const formatted = {};
 
     pokemonList.forEach((pokemon) => {
       formatted[pokemon.id] = {};
     });
 
-    data.forEach((entry) => {
-      formatted[entry.pokemon_id][entry.player_id] =
-        true;
+    let allData = [];
+    let from = 0;
+    const pageSize = 500;
+
+    while (true) {
+      const { data, error } = await supabase
+        .from('shiny_catches')
+        .select('pokemon_id, player_id')
+        .order('pokemon_id', { ascending: true })
+        .order('player_id', { ascending: true })
+        .range(from, from + pageSize - 1);
+
+      if (error) {
+        console.error('Erreur chargement Shiny :', error);
+        return;
+      }
+
+      allData = [...allData, ...(data || [])];
+
+      if (!data || data.length < pageSize) {
+        break;
+      }
+
+      from += pageSize;
+    }
+
+    allData.forEach((entry) => {
+      if (!formatted[entry.pokemon_id]) {
+        formatted[entry.pokemon_id] = {};
+      }
+
+      formatted[entry.pokemon_id][entry.player_id] = true;
     });
 
     setTracker(formatted);
   };
-
 
 
 
