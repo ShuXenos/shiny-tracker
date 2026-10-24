@@ -270,12 +270,14 @@ const togglePokemon = async (
 
         <div className="mb-10 text-center">
           <h1 
-            className="flex flex-wrap items-center justify-center gap-3 text-4xl md:text-6xl font-black tracking-wide"
+            className="flex flex-wrap items-center justify-center gap-4 text-4xl md:text-6xl font-black"
             style={{
               fontFamily: '"Pokemon Solid", sans-serif',
               color: '#FFCB05',
               WebkitTextStroke: '2px #2A75BB',
               textShadow: '3px 4px 0px #1D3F78',
+              lineHeight: '1.8',
+              margin: 0,
             }}
           >
             <img
@@ -283,10 +285,12 @@ const togglePokemon = async (
               alt="Poké Ball"
               className="w-12 h-12 md:w-16 md:h-16"
             />
+
+            
             <span>Shiny Tracker Pokémon</span>
           </h1>
 
-          <p className="text-zinc-400 mt-4 text-lg">
+          <p className="text-zinc-400 text-lg mt-2">
             Si sa brille pas, DEHOOOORS!
           </p>
         </div>
