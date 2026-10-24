@@ -13,12 +13,17 @@ export default function App() {
 
   const [recentShinies, setRecentShinies] =
     React.useState([]);
+  const [visibleCount, setVisibleCount] = React.useState(3);
+  const [hasMoreShinies, setHasMoreShinies] = React.useState(false);
 
   React.useEffect(() => {
     loadPlayers();
     loadTracker();
-    loadRecentShinies();
   }, []);
+
+  React.useEffect(() => {
+    loadRecentShinies();
+  }, [visibleCount]);
 
   // =========================
   // LOAD PLAYERS
@@ -77,17 +82,16 @@ export default function App() {
     const { data, error } = await supabase
       .from('shiny_catches')
       .select('*')
-      .order('obtained_at', {
-       ascending: false,
-      })
-      .limit(3);
+      .order('obtained_at', { ascending: false })
+      .limit(visibleCount + 1);
 
     if (error) {
       console.error(error);
-     return;
-   }
+      return;
+    }
 
-   setRecentShinies(data);
+    setHasMoreShinies((data || []).length > visibleCount);
+    setRecentShinies((data || []).slice(0, visibleCount));
   };
 
 
@@ -312,6 +316,32 @@ const togglePokemon = async (
           </div>
         );
       })}
+     </div>
+  )}
+
+  {(hasMoreShinies || visibleCount > 3) && (
+    <div className="flex justify-center gap-3 mt-6">
+
+      {hasMoreShinies && (
+        <button
+          type="button"
+          onClick={() => setVisibleCount((prev) => prev + 10)}
+          className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-6 py-3 rounded-xl transition"
+        >
+          ✨ Voir plus
+        </button>
+      )}
+
+      {visibleCount > 3 && (
+        <button
+          type="button"
+          onClick={() => setVisibleCount(3)}
+          className="bg-zinc-700 hover:bg-zinc-600 text-white font-semibold px-6 py-3 rounded-xl transition"
+        >
+          Voir moins
+        </button>
+      )}
+
     </div>
   )}
 </div>
