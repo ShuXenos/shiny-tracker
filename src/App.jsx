@@ -268,32 +268,48 @@ const togglePokemon = async (
 
         {/* HEADER */}
 
-        <div className="mb-10 text-center">
-          <h1 
-            className="flex flex-wrap items-center justify-center gap-4 text-4xl md:text-6xl font-black"
-            style={{
-              fontFamily: '"Pokemon Solid", sans-serif',
-              color: '#FFCB05',
-              WebkitTextStroke: '2px #2A75BB',
-              textShadow: '3px 4px 0px #1D3F78',
-              lineHeight: '1.8',
-              margin: 0,
-            }}
-          >
+        <div className="mb-10 flex flex-col items-center text-center">
+
+          {/* TITRE ET POKEBALL */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
+
             <img
               src="/pokeball.svg"
               alt="Poké Ball"
-              className="w-12 h-12 md:w-16 md:h-16"
+              className="w-14 h-14 md:w-16 md:h-16 object-contain"
+              style={{
+                transform: 'translateY(18px)',
+              }}
             />
 
-            
-            <span>Shiny Tracker Pokémon</span>
-          </h1>
+            <h1
+              className="text-4xl md:text-6xl font-black"
+              style={{
+                fontFamily: '"Pokemon Solid", sans-serif',
+                color: '#FFCB05',
+                WebkitTextStroke: '2px #2A75BB',
+                textShadow: '3px 4px 0px #1D3F78',
+                lineHeight: '1.2',
+                margin: 0,
+                transform: 'translateY(-12px)',
+              }}
+            >
+              Shiny Tracker Pokémon
+            </h1>
 
-          <p className="text-zinc-400 text-lg mt-2">
+          </div>
+
+          {/* SLOGAN */}
+          <p
+            className="text-zinc-400 text-lg"
+            style={{
+              marginTop: '32px',
+            }}
+          >
             Si sa brille pas, DEHOOOORS!
           </p>
-        </div>
+
+       </div>
 
 
 <div className="mb-8 bg-zinc-900 rounded-2xl p-6 border border-zinc-800">
