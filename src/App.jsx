@@ -268,12 +268,25 @@ const togglePokemon = async (
 
         {/* HEADER */}
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
-            ✨ Shiny Tracker Pokémon
+        <div className="mb-10 text-center">
+          <h1 
+            className="flex flex-wrap items-center justify-center gap-3 text-4xl md:text-6xl font-black tracking-wide"
+            style={{
+              fontFamily: '"Pokemon Solid", sans-serif',
+              color: '#FFCB05',
+              WebkitTextStroke: '2px #2A75BB',
+              textShadow: '3px 4px 0px #1D3F78',
+            }}
+          >
+            <img
+              src="/pokeball.svg"
+              alt="Poké Ball"
+              className="w-12 h-12 md:w-16 md:h-16"
+            />
+            <span>Shiny Tracker Pokémon</span>
           </h1>
 
-          <p className="text-zinc-400">
+          <p className="text-zinc-400 mt-4 text-lg">
             Si sa brille pas, DEHOOOORS!
           </p>
         </div>
